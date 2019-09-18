@@ -6,11 +6,11 @@ exports.create = (req, res) => {
     genre: req.body.genre,
   });
   artist.save().then(() => {
-    res.status(201).json(artist); 
+    res.status(201).json(artist);
   });
 };
-
-const List = new List({
-  artist.find({ name: Tame Impala, genre: Rock})
-});
-  
+exports.list = (req, res) => {
+  Artist.find({}, (err, artists) => {
+    res.status(200).send(artists);
+  });
+};

@@ -9,8 +9,6 @@ app.get('', (req, res) => {
 
 app.post('/artists', artistControllers.create);
 
-app.get('/artists', (req, res) => {
-  res.status(200);
-});
+app.get('/artists', artistControllers.list);
 
 module.exports = app;
