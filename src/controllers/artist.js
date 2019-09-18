@@ -9,3 +9,8 @@ exports.create = (req, res) => {
     res.status(201).json(artist); 
   });
 };
+
+const List = new List({
+  artist.find({ name: Tame Impala, genre: Rock})
+});
+  
