@@ -23,6 +23,18 @@ exports.find = (req, res) => {
     } else {
       res.status(200).json(artist);
     }
-    console.log(err);
+  });
+};
+
+exports.update = (req, res) => {
+  Artist.findById(req.params.artistId, (err, artist) => {
+    if (!artist) {
+      res.status(404).json({ error: 'The artist could not be found.' });
+    } else {
+      artist.set(req.body);
+      artist.save().then(() => {
+        res.status(200).json(artist);
+      });
+    }
   });
 };
