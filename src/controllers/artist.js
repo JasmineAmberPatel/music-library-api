@@ -38,3 +38,16 @@ exports.update = (req, res) => {
     }
   });
 };
+
+exports.delete = (req, res) => {
+  Artist.findByIdAndDelete(req.params.artistId, (err, artist) => {
+    if (!artist) {
+      res.status(404).json({ error: 'The artist could not be found.' });
+    } else {
+      artist.set(req.body);
+      artist.save().then(() => {
+        res.status(204).json(artist);
+      });
+    }
+  });
+};
