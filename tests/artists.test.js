@@ -89,7 +89,7 @@ describe('/artists', () => {
     });
 
     describe('PATCH /artists/:artistId', () => {
-      it('updates artist record by id', (done) => {
+      it('updates artist genre by id', (done) => {
         const artist = artists[0];
         chai.request(server)
           .patch(`/artists/${artist._id}`)
@@ -102,47 +102,62 @@ describe('/artists', () => {
               done();
             });
           });
-      });
+      });  
 
-      it('returns a 404 if the artist does not exist', (done) => {
-        chai.request(server)
-          .patch('/artists/12345')
-          .send({ genre: 'Psychedelic Rock' })
-          .end((err, res) => {
-            expect(err).to.equal(null);
-            expect(res.status).to.equal(404);
-            expect(res.body.error).to.equal('The artist could not be found.');
-            done();
+        it('updates artist name by id', (done) => {
+          const artist = artists[1];
+          chai.request(server)
+            .patch(`/artists/${artist._id}`)
+            .send({ name: 'AC/DC' })
+            .end((err, res) => {
+              expect(err).to.equal(null);
+              expect(res.status).to.equal(200);
+              Artist.findById(artist._id, (err, updatedArtist) => {
+                expect(updatedArtist.name).to.equal('AC/DC');
+                done();
+              });
+            });
+        });
+
+          it('returns a 404 if the artist does not exist', (done) => {
+            chai.request(server)
+              .patch('/artists/12345')
+              .send({ genre: 'Psychedelic Rock' })
+              .end((err, res) => {
+                expect(err).to.equal(null);
+                expect(res.status).to.equal(404);
+                expect(res.body.error).to.equal('The artist could not be found.');
+                done();
+              });
           });
-      });
-    });
+        });
 
-    describe('DELETE /artists/:artistId', () => {
-      xit('deletes artist record by id', (done) => {
-        const artist = artists[0];
-        chai.request(server)
-          .delete(`/artists/${artist._id}`)
-          .end((err, res) => {
-            expect(err).to.equal(null);
-            expect(res.status).to.equal(204);
-            Artist.findById(artist._id, (error, updatedArtist) => {
-              expect(error).to.equal(null);
-              expect(updatedArtist).to.equal(null);
+      describe('DELETE /artists/:artistId', () => {
+        xit('deletes artist record by id', (done) => {
+          const artist = artists[0];
+          chai.request(server)
+            .delete(`/artists/${artist._id}`)
+            .end((err, res) => {
+              expect(err).to.equal(null);
+              expect(res.status).to.equal(204);
+              Artist.findById(artist._id, (error, updatedArtist) => {
+                expect(error).to.equal(null);
+                expect(updatedArtist).to.equal(null);
+                done();
+              });
+            });
+        });
+
+        xit('returns a 404 if the artist does not exist', (done) => {
+          chai.request(server)
+            .delete('/artists/12345')
+            .end((err, res) => {
+              expect(err).to.equal(null);
+              expect(res.status).to.equal(404);
+              expect(res.body.error).to.equal('The artist could not be found.');
               done();
             });
-          });
-      });
-
-      xit('returns a 404 if the artist does not exist', (done) => {
-        chai.request(server)
-          .delete('/artists/12345')
-          .end((err, res) => {
-            expect(err).to.equal(null);
-            expect(res.status).to.equal(404);
-            expect(res.body.error).to.equal('The artist could not be found.');
-            done();
-          });
+        });
       });
     });
   });
-});
