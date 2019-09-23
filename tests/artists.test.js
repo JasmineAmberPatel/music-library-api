@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Artist = require('../src/models/artist');
 
 describe('/artists', () => {
