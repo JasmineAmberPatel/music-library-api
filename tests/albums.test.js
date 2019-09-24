@@ -64,4 +64,30 @@ describe('/albums', () => {
         });
     });
   });
+
+  describe('GET /album/:albumId', () => {
+    it('gets album record by id', (done) => {
+      const album = album[0];
+      chai.request(server)
+        .get(`/album/${album._id}`)
+        .end((err, res) => {
+          expect(err).to.equal(null);
+          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal(album.name);
+          expect(res.body.year).to.equal(artist.year);
+          done();
+        });
+    });
+
+    it('returns a 404 if the album does not exist', (done) => {
+      chai.request(server)
+        .get('/album/12345')
+        .end((err, res) => {
+          expect(err).to.equal(null);
+          expect(res.status).to.equal(404);
+          expect(res.body.error).to.equal('The album could not be found.');
+          done();
+        });
+    });
+  });
 });
