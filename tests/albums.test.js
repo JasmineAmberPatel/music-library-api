@@ -65,29 +65,90 @@ describe('/albums', () => {
     });
   });
 
-  describe('GET /album/:albumId', () => {
-    it('gets album record by id', (done) => {
-      const album = album[0];
-      chai.request(server)
-        .get(`/album/${album._id}`)
-        .end((err, res) => {
-          expect(err).to.equal(null);
-          expect(res.status).to.equal(200);
-          expect(res.body.name).to.equal(album.name);
-          expect(res.body.year).to.equal(artist.year);
-          done();
-        });
+  describe('with albums in database', () => {
+    let albums;
+    beforeEach((done) => {
+      Promise.all([
+        Album.create({ name: 'InnerSpeaker', year: 2010 }),
+        Album.create({ name: 'Saturn', year: 2018 }),
+        Album.create({ name: 'DAMN', year: 2017 }),
+      ]).then((documents) => {
+        albums = documents;
+        done();
+      });
     });
+    describe('GET /albums', () => {
+      it('gets all album records', (done) => {
+        chai.request(server)
+          .get('/artists/:artistId/albums')
+          .end((err, res) => {
+            expect(err).to.equal(null);
+            expect(res.status).to.equal(200);
+            expect(res.body).to.have.lengthOf(3);
 
-    it('returns a 404 if the album does not exist', (done) => {
-      chai.request(server)
-        .get('/album/12345')
-        .end((err, res) => {
-          expect(err).to.equal(null);
-          expect(res.status).to.equal(404);
-          expect(res.body.error).to.equal('The album could not be found.');
-          done();
-        });
+            res.body.forEach((album) => {
+              const expected = albums.find(a => a._id.toString() === album._id);
+              expect(album.name).to.equal(expected.name);
+              expect(album.year).to.equal(expected.year);
+            });
+            done();
+          });
+      });
+    });
+    describe('PATCH /albums/:albumId', () => {
+      it('updates album name by id', (done) => {
+        const album = albums[0];
+        chai.request(server)
+          .patch(`/albums/${album._id}`)
+          .send({ name: 'Assume Form' })
+          .end((err, res) => {
+            expect(err).to.equal(null);
+            expect(res.status).to.equal(200);
+            Album.findById(album._id, (err, updatedAlbum) => {
+              expect(updatedAlbum.name).to.equal('Assume Form');
+              done();
+            });
+          });
+      });
+
+      it('returns a 404 if the album does not exist', (done) => {
+        chai.request(server)
+          .patch('/albums/12345')
+          .send({ name: 'Fishfinger sandwich' })
+          .end((err, res) => {
+            expect(err).to.equal(null);
+            expect(res.status).to.equal(404);
+            expect(res.body.error).to.equal('The album could not be found.');
+            done();
+          });
+      });
+    });
+    describe('DELETE /albums/:albumId', () => {
+      it('deletes album record by id', (done) => {
+        const album = albums[0];
+        chai.request(server)
+          .delete(`/albums/${album._id}`)
+          .end((err, res) => {
+            expect(err).to.equal(null);
+            expect(res.status).to.equal(204);
+            Album.findById(album._id, (error, updatedAlbum) => {
+              expect(error).to.equal(null);
+              expect(updatedAlbum).to.equal(null);
+              done();
+            });
+          });
+      });
+
+      it('returns a 404 if the album does not exist', (done) => {
+        chai.request(server)
+          .delete('/albums/12345')
+          .end((err, res) => {
+            expect(err).to.equal(null);
+            expect(res.status).to.equal(404);
+            expect(res.body.error).to.equal('The album could not be found.');
+            done();
+          });
+      });
     });
   });
 });
