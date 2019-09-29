@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
 
 const albumSchema = new Schema({
+  artist: { type: Schema.ObjectId, ref: 'Artist' },
   name: String,
   year: Number,
-  artist: { type: Schema.ObjectId, ref: 'Artist' },
 });
 
 const Album = mongoose.model('Album', albumSchema);
